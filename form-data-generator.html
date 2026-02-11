@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试数据生成器</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --bg-color: #f5f7fa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --border-color: #e1e4e8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #fafafa;
+            color: #444;
+            font-family: 'Courier New', Courier, monospace; /* 等宽字体方便查看UUID */
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button.copy-btn {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            color: #555;
+            padding: 0 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            min-width: 80px;
+        }
+
+        button.copy-btn:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        button.copy-btn:active {
+            background-color: #e0e0e0;
+        }
+
+        button.copy-btn.copied {
+            background-color: #e6fffa;
+            border-color: #38b2ac;
+            color: #38b2ac;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .generate-btn:hover {
+            background-color: #357abd;
+        }
+
+        /* 针对英文名拆分的样式 */
+        .split-name-row {
+            display: flex;
+            gap: 10px;
+        }
+        .split-name-col {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🛠️ 测试数据生成</h2>
+
+    <div class="input-group">
+        <label>1. 用户名 (3 Random Words)</label>
+        <div class="input-wrapper">
+            <input type="text" id="username" readonly>
+            <button class="copy-btn" onclick="copyToClipboard('username', this)">复制</button>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>2. 密码 (UUID)</label>
+        <div class="input-wrapper">
+            <input type="text" id="password" readonly>
+            <button class="copy-btn" onclick="copyToClipboard('password', this)">复制</button>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>3. 英文名 (First Name + Last Name)</label>
+        <div class="split-name-row">
+            <div class="split-name-col">
+                <div class="input-wrapper">
+                    <input type="text" id="firstname" placeholder="First" readonly>
+                    <button class="copy-btn" style="min-width: 50px;" onclick="copyToClipboard('firstname', this)">复制</button>
+                </div>
+            </div>
+            <div class="split-name-col">
+                <div class="input-wrapper">
+                    <input type="text" id="lastname" placeholder="Last" readonly>
+                    <button class="copy-btn" style="min-width: 50px;" onclick="copyToClipboard('lastname', this)">复制</button>
+                </div>
+            </div>
+        </div>
+        <div class="input-wrapper" style="margin-top: 8px;">
+             <button class="copy-btn" style="width: 100%" onclick="copyFullName(this)">复制完整姓名 (Full Name)</button>
+        </div>
+    </div>
+
+    <button class="generate-btn" onclick="generateAll()">🔄 生成新数据</button>
+</div>
+
+<script>
+    // 数据源
+    const adjectives = ["Happy", "Bright", "Cool", "Super", "Fast", "Lazy", "Blue", "Red", "Cyber", "Mega", "Tiny", "Wild", "Smart", "Brave", "Calm", "Eager", "Fancy"];
+    const nouns = ["Tiger", "Eagle", "Moon", "Star", "Coder", "Ninja", "Panda", "Robot", "Pilot", "Ocean", "Lion", "Wolf", "Bear", "Fox", "Hawk", "Whale", "Ghost"];
+    const verbs = ["Runner", "Walker", "Jumper", "Flyer", "Surfer", "Rider", "Seeker", "Maker", "Fixer", "Dreamer", "Gamer", "Hunter", "Diver", "Climber"];
+
+    const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen"];
+    const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"];
+
+    // 工具函数：获取随机数组元素
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    // 生成 UUID
+    function generateUUID() {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        // Fallback for older browsers
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    // 生成用户名 (3个单词)
+    function generateUsername() {
+        const w1 = getRandomItem(adjectives);
+        const w2 = getRandomItem(nouns);
+        const w3 = getRandomItem(verbs);
+        return `${w1}${w2}${w3}`; // CamelCase
+    }
+
+    // 生成所有数据
+    function generateAll() {
+        // 1. Username
+        document.getElementById('username').value = generateUsername();
+        
+        // 2. Password (UUID)
+        document.getElementById('password').value = generateUUID();
+
+        // 3. Name
+        document.getElementById('firstname').value = getRandomItem(firstNames);
+        document.getElementById('lastname').value = getRandomItem(lastNames);
+    }
+
+    // 复制功能
+    function copyToClipboard(elementId, btn) {
+        const input = document.getElementById(elementId);
+        input.select();
+        input.setSelectionRange(0, 99999); // 适配移动端
+
+        navigator.clipboard.writeText(input.value).then(() => {
+            showCopiedFeedback(btn);
+        }).catch(err => {
+            console.error('无法复制', err);
+            // 降级处理
+            document.execCommand('copy');
+            showCopiedFeedback(btn);
+        });
+    }
+
+    // 复制完整姓名特殊处理
+    function copyFullName(btn) {
+        const first = document.getElementById('firstname').value;
+        const last = document.getElementById('lastname').value;
+        const fullName = `${first} ${last}`;
+        
+        navigator.clipboard.writeText(fullName).then(() => {
+            showCopiedFeedback(btn);
+        });
+    }
+
+    // 按钮反馈效果
+    function showCopiedFeedback(btn) {
+        const originalText = btn.innerText;
+        btn.innerText = "已复制!";
+        btn.classList.add("copied");
+        
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.classList.remove("copied");
+        }, 1500);
+    }
+
+    // 页面加载时自动生成一次
+    window.onload = generateAll;
+
+</script>
+
+</body>
+</html>
