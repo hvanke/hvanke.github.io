@@ -6,135 +6,374 @@
     <title>测试数据生成器</title>
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-color: #333;
-            --border-color: #e1e4e8;
+            --primary-color: #2457d6;
+            --primary-deep: #173a9c;
+            --primary-soft: #eaf1ff;
+            --bg-color: #eef3f8;
+            --card-bg: rgba(255, 255, 255, 0.82);
+            --surface-bg: rgba(247, 250, 252, 0.92);
+            --text-color: #142132;
+            --muted-color: #637286;
+            --border-color: #d7e1ec;
+            --shadow-color: rgba(18, 34, 66, 0.12);
+            --success-color: #1f9d74;
+            --success-soft: #e8fbf4;
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            font-family: "Avenir Next", "SF Pro Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.95) 0, rgba(234, 241, 255, 0.85) 34%, rgba(238, 243, 248, 0) 60%),
+                linear-gradient(180deg, #f7faff 0%, #eef3f8 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 24px;
             color: var(--text-color);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+            filter: blur(10px);
+        }
+
+        body::before {
+            width: 320px;
+            height: 320px;
+            top: -120px;
+            right: -60px;
+            background: rgba(36, 87, 214, 0.08);
+        }
+
+        body::after {
+            width: 240px;
+            height: 240px;
+            bottom: -80px;
+            left: -80px;
+            background: rgba(36, 87, 214, 0.06);
         }
 
         .container {
-            background-color: var(--card-bg);
+            position: relative;
+            overflow: hidden;
+            background: var(--card-bg);
             padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 28px;
+            box-shadow: 0 24px 64px var(--shadow-color);
             width: 100%;
-            max-width: 500px;
+            max-width: 620px;
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            animation: fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
+        .container::before {
+            content: "";
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            top: -120px;
+            right: -110px;
+            background: radial-gradient(circle, rgba(36, 87, 214, 0.18), rgba(36, 87, 214, 0) 72%);
+            pointer-events: none;
+        }
+
+        .hero {
+            position: relative;
+            margin-bottom: 1.6rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.42rem 0.78rem;
+            border-radius: 999px;
+            background: var(--primary-soft);
+            border: 1px solid rgba(36, 87, 214, 0.14);
+            color: var(--primary-deep);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            margin: 0.95rem 0 0.45rem;
+            font-size: clamp(1.9rem, 4vw, 2.45rem);
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+        }
+
+        .hero-desc {
+            margin: 0;
+            color: var(--muted-color);
+            line-height: 1.65;
+            max-width: 36rem;
+            font-size: 0.96rem;
+        }
+
+        .tip-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.65rem;
+            margin-top: 1rem;
+        }
+
+        .tip-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.55rem 0.85rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid var(--border-color);
+            color: #4c5b6f;
+            font-size: 0.88rem;
+            font-weight: 600;
         }
 
         .input-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(246, 249, 252, 0.92));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
 
-        .input-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
+        .field-label {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+            margin-bottom: 0.85rem;
+            color: var(--muted-color);
             font-size: 0.9rem;
-            color: #666;
+        }
+
+        .field-step {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.2rem;
+            height: 1.6rem;
+            padding: 0 0.55rem;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--primary-deep);
+            font: 700 0.78rem/1 "IBM Plex Mono", "SFMono-Regular", "Consolas", monospace;
+            letter-spacing: 0.08em;
+        }
+
+        .field-text {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .field-meta {
+            color: var(--muted-color);
+            font-size: 0.85rem;
         }
 
         .input-wrapper {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .input-wrapper.full-width {
+            grid-template-columns: 1fr;
         }
 
         input[type="text"] {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 1rem;
-            background-color: #fafafa;
-            color: #444;
-            font-family: 'Courier New', Courier, monospace; /* 等宽字体方便查看UUID */
+            width: 100%;
+            min-width: 0;
+            height: 50px;
+            padding: 0 1rem;
+            border: 1px solid #dbe4ee;
+            border-radius: 14px;
+            font-size: 0.98rem;
+            background: var(--surface-bg);
+            color: #253449;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+            font-family: "IBM Plex Mono", "SFMono-Regular", "Consolas", "Courier New", monospace;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]::placeholder {
+            color: #9aa8b7;
         }
 
         input[type="text"]:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: rgba(36, 87, 214, 0.55);
+            box-shadow: 0 0 0 4px rgba(36, 87, 214, 0.12);
+        }
+
+        button {
+            font: inherit;
         }
 
         button.copy-btn {
-            background-color: white;
-            border: 1px solid var(--border-color);
-            color: #555;
-            padding: 0 15px;
-            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 86px;
+            height: 50px;
+            padding: 0 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #d2dce8;
+            color: #24364c;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-            min-width: 80px;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease, color 0.18s ease;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(20, 33, 50, 0.06);
         }
 
         button.copy-btn:hover {
-            background-color: #f0f0f0;
-            border-color: #ccc;
+            transform: translateY(-1px);
+            background: #fff;
+            border-color: #bcc9d9;
+            box-shadow: 0 14px 26px rgba(20, 33, 50, 0.08);
         }
 
         button.copy-btn:active {
-            background-color: #e0e0e0;
+            transform: translateY(0);
+            box-shadow: 0 6px 12px rgba(20, 33, 50, 0.08);
         }
 
         button.copy-btn.copied {
-            background-color: #e6fffa;
-            border-color: #38b2ac;
-            color: #38b2ac;
+            background: var(--success-soft);
+            border-color: rgba(31, 157, 116, 0.3);
+            color: var(--success-color);
+        }
+
+        button.copy-btn.compact-btn {
+            min-width: 70px;
+        }
+
+        button.copy-btn.full-copy-btn {
+            width: 100%;
+            margin-top: 0.75rem;
+            background: var(--primary-soft);
+            border-color: rgba(36, 87, 214, 0.18);
+            color: var(--primary-deep);
+        }
+
+        button.copy-btn.full-copy-btn:hover {
+            background: #f4f7ff;
+            border-color: rgba(36, 87, 214, 0.28);
+        }
+
+        button:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(36, 87, 214, 0.15);
         }
 
         .generate-btn {
             width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
+            height: 56px;
+            padding: 0 1.2rem;
+            background: linear-gradient(135deg, #2457d6, #2f80ed);
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 18px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 1rem;
-            transition: background-color 0.2s;
+            margin-top: 1.25rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            box-shadow: 0 18px 30px rgba(36, 87, 214, 0.28);
         }
 
         .generate-btn:hover {
-            background-color: #357abd;
+            transform: translateY(-1px);
+            filter: saturate(1.06);
+            box-shadow: 0 22px 36px rgba(36, 87, 214, 0.32);
         }
 
-        /* 针对英文名拆分的样式 */
-        .split-name-row {
-            display: flex;
-            gap: 10px;
+        .generate-btn:active {
+            transform: translateY(0);
         }
+
+        .split-name-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
         .split-name-col {
-            flex: 1;
+            min-width: 0;
+        }
+
+        @keyframes fade-up {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 16px;
+            }
+
+            .container {
+                padding: 1.35rem;
+                border-radius: 24px;
+            }
+
+            .hero h1 {
+                font-size: 1.9rem;
+            }
+
+            .hero-desc {
+                font-size: 0.92rem;
+            }
+
+            .split-name-row,
+            .input-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            button.copy-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🛠️ 测试数据生成</h2>
-    <p>请使用 Edge 浏览器，请不要使用隐私模式，可以新增 Profile 进行测试</p>
+    <div class="hero">
+        <span class="hero-badge">Form Data Generator</span>
+        <h1>测试数据生成</h1>
+    </div>
 
     <div class="input-group">
-        <label>1. 用户名 (3 Random Words)</label>
+        <label class="field-label" for="username">
+            <span class="field-step">01</span>
+            <span class="field-text">用户名</span>
+        </label>
         <div class="input-wrapper">
             <input type="text" id="username" readonly>
             <button class="copy-btn" onclick="copyToClipboard('username', this)">复制</button>
@@ -142,7 +381,11 @@
     </div>
 
     <div class="input-group">
-        <label>2. 密码 (UUID)</label>
+        <label class="field-label" for="password">
+            <span class="field-step">02</span>
+            <span class="field-text">密码</span>
+            <span class="field-meta">16~18位大小写字母数字</span>
+        </label>
         <div class="input-wrapper">
             <input type="text" id="password" readonly>
             <button class="copy-btn" onclick="copyToClipboard('password', this)">复制</button>
@@ -150,23 +393,27 @@
     </div>
 
     <div class="input-group">
-        <label>3. 英文名 (First Name + Last Name)</label>
+        <label class="field-label" for="firstname">
+            <span class="field-step">03</span>
+            <span class="field-text">英文名</span>
+            <span class="field-meta">First Name + Last Name</span>
+        </label>
         <div class="split-name-row">
             <div class="split-name-col">
                 <div class="input-wrapper">
                     <input type="text" id="firstname" placeholder="First" readonly>
-                    <button class="copy-btn" style="min-width: 50px;" onclick="copyToClipboard('firstname', this)">复制</button>
+                    <button class="copy-btn compact-btn" onclick="copyToClipboard('firstname', this)">复制</button>
                 </div>
             </div>
             <div class="split-name-col">
                 <div class="input-wrapper">
                     <input type="text" id="lastname" placeholder="Last" readonly>
-                    <button class="copy-btn" style="min-width: 50px;" onclick="copyToClipboard('lastname', this)">复制</button>
+                    <button class="copy-btn compact-btn" onclick="copyToClipboard('lastname', this)">复制</button>
                 </div>
             </div>
         </div>
-        <div class="input-wrapper" style="margin-top: 8px;">
-             <button class="copy-btn" style="width: 100%" onclick="copyFullName(this)">复制完整姓名 (Full Name)</button>
+        <div class="input-wrapper full-width">
+             <button class="copy-btn full-copy-btn" onclick="copyFullName(this)">复制完整姓名 (Full Name)</button>
         </div>
     </div>
 
@@ -179,7 +426,7 @@
     const nouns = ["Tiger", "Eagle", "Moon", "Star", "Coder", "Ninja", "Panda", "Robot", "Pilot", "Ocean", "Lion", "Wolf", "Bear", "Fox", "Hawk", "Whale", "Ghost"];
     const verbs = ["Runner", "Walker", "Jumper", "Flyer", "Surfer", "Rider", "Seeker", "Maker", "Fixer", "Dreamer", "Gamer", "Hunter", "Diver", "Climber"];
 
-    const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen"];
+    const firstNames = ["James", "Mary", "John", "Patricia", "Robert", "Jennifer", "Michael", "Linda", "William", "Elizabeth", "David", "Barbara", "Richard", "Susan", "Joseph", "Jessica", "Thomas", "Sarah", "Charles", "Karen", "Daniel", "Nancy", "Matthew", "Lisa", "Anthony", "Betty", "Mark", "Dorothy", "Donald", "Sandra", "Steven", "Ashley", "Paul", "Kimberly", "Andrew", "Donna", "Joshua", "Emily", "Kenneth", "Michelle"];
     const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"];
 
     // 工具函数：获取随机数组元素
@@ -187,33 +434,69 @@
         return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    // 生成 UUID
-    function generateUUID() {
-        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-            return crypto.randomUUID();
+    function getRandomInt(max) {
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            const array = new Uint32Array(1);
+            crypto.getRandomValues(array);
+            return array[0] % max;
         }
-        // Fallback for older browsers
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+        return Math.floor(Math.random() * max);
     }
 
-    // 生成用户名 (3个单词)
+    function shuffleArray(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = getRandomInt(i + 1);
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // 生成密码：16~18位，包含大小写字母和数字
+    function generatePassword() {
+        const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const numbers = "0123456789";
+        const allChars = uppercase + lowercase + numbers;
+        const length = 16 + getRandomInt(3); // 16, 17, 18
+
+        const passwordChars = [
+            uppercase[getRandomInt(uppercase.length)],
+            lowercase[getRandomInt(lowercase.length)],
+            numbers[getRandomInt(numbers.length)]
+        ];
+
+        for (let i = passwordChars.length; i < length; i++) {
+            passwordChars.push(allChars[getRandomInt(allChars.length)]);
+        }
+
+        return shuffleArray(passwordChars).join('');
+    }
+
+    function getRandomLetters(length) {
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+        let result = "";
+        for (let i = 0; i < length; i++) {
+            result += letters[getRandomInt(letters.length)];
+        }
+        return result;
+    }
+
+    // 生成用户名：1个单词 + 4位随机字母 + 可选2位随机数字
     function generateUsername() {
-        const w1 = getRandomItem(adjectives);
-        const w2 = getRandomItem(nouns);
-        const w3 = getRandomItem(verbs);
-        return `${w1}${w2}${w3}`.toLowerCase(); // CamelCase
+        const words = [...adjectives, ...nouns, ...verbs];
+        const word = getRandomItem(words).toLowerCase();
+        const letters = getRandomLetters(4);
+        const digits = getRandomInt(2) === 0 ? "" : String(getRandomInt(100)).padStart(2, '0');
+        return `${word}${letters}${digits}`;
     }
 
     // 生成所有数据
     function generateAll() {
         // 1. Username
         document.getElementById('username').value = generateUsername();
-        
-        // 2. Password (UUID)
-        document.getElementById('password').value = generateUUID();
+
+        // 2. Password
+        document.getElementById('password').value = generatePassword();
 
         // 3. Name
         document.getElementById('firstname').value = getRandomItem(firstNames);
@@ -241,7 +524,7 @@
         const first = document.getElementById('firstname').value;
         const last = document.getElementById('lastname').value;
         const fullName = `${first} ${last}`;
-        
+
         navigator.clipboard.writeText(fullName).then(() => {
             showCopiedFeedback(btn);
         });
@@ -252,7 +535,7 @@
         const originalText = btn.innerText;
         btn.innerText = "已复制!";
         btn.classList.add("copied");
-        
+
         setTimeout(() => {
             btn.innerText = originalText;
             btn.classList.remove("copied");
